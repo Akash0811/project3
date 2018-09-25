@@ -4,7 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import Order , RegularPizza , SicilianPizza , Sub , DinnerPlatter , Pasta , Salad , Topping
+from .models import Order , RegularPizza , SicilianPizza , Sub , DinnerPlatter , Pasta , Salad , Topping ,\
+                    TemplateRegularPizza , TemplateSicilianPizza , TemplateSub , TemplateDinnerPlatter , TemplatePasta , TemplateSalad
 
 # Create your views here.
 
@@ -13,13 +14,13 @@ def index(request):
         return render(request, "orders/login.html", {"message": None})
     context = {
         "user": request.user,
-        "RegularPizza": RegularPizza.objects.all(),
-        "SicilianPizza": SicilianPizza.objects.all(),
+        "RegularPizza": TemplateRegularPizza.objects.all(),
+        "SicilianPizza": TemplateSicilianPizza.objects.all(),
         "Topping": Topping.objects.all(),
-        "Sub": Sub.objects.all(),
-        "Pasta": Pasta.objects.all(),
-        "Salad": Salad.objects.all(),
-        "DinnerPlatter": DinnerPlatter.objects.all()
+        "Sub": TemplateSub.objects.all(),
+        "Pasta": TemplatePasta.objects.all(),
+        "Salad": TemplateSalad.objects.all(),
+        "DinnerPlatter": TemplateDinnerPlatter.objects.all()
     }
     return render(request, "orders/index.html", context)
 
