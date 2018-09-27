@@ -1,0 +1,19 @@
+{% extends "orders/base.html" %}
+
+{% block body %}
+<ul>
+    <h3>Sicilian Pizza</h3>
+    <form action="{% url 'sicilian_pizza' %}" method="post">
+        {% csrf_token %}
+        <input type="radio" name="size" value="Small"> Small<br>
+        <input type="radio" name="size" value="Large"> Large<br>
+        {% for item in Topping %}
+            <li>
+                <input type="radio" name="topping" value="{{ item }}"> {{ item }}<br>
+            </li>
+        {% endfor %}
+        <input type="submit" value="Add"/>
+    </form>
+    <li>Go Back<a href="{% url 'index' %}">Logout</a></li>
+</ul>
+{% endblock %}

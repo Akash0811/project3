@@ -1,11 +1,13 @@
 from django.db import models
 from django.utils.timezone import now
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Order(models.Model):
-    name = models.CharField(max_length=64 , default = "MyOrder")
+    user = models.ForeignKey( User , on_delete=models.CASCADE )
+    price = models.FloatField( default = 0.0 )
+    buy = models.BooleanField( default = False )
     time = now()
-    pass
 
 class NonSizableDish(models.Model):
     name = models.CharField(max_length=64)
@@ -21,16 +23,9 @@ class Topping(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-class SmallSize(models.Model):
-    name = models.CharField(max_length=64)
-    big = models.BooleanField(default=False)
-
-class ExtraCheese(models.Model):
-    extra = models.BooleanField(default=False)
-
 class SizableDish(NonSizableDish):
     LargePrice = models.FloatField(null=True, blank=True, default=None)
-    size = models.ManyToManyField(SmallSize, blank=True, related_name="dish")
+    size = models.BooleanField(default = False)
 
     def __str__(self):
         return f"{self.name} - Small:{self.SmallPrice} - Large:{self.LargePrice}"
@@ -73,33 +68,90 @@ class TemplateSalad(NonSizableDish):
 '''Real orders are passed and hence these are linked to attributes and orders databases
 This is displayed on cart , not on menu
 '''
-class RegularPizza(SizableDish):
+class RegularPizza(TemplateRegularPizza):
     orders = models.ManyToManyField(Order, blank=True, related_name="regular_dish")
     toppings = models.ManyToManyField(Topping, blank=True, related_name="reg_dish")
     no_of_toppings = models.IntegerField( default = 0 )
 
+    def price(self):
+        if self.size == False:
+            if no_of_toppings == 1:
+                return self.Topping1SmallPrice
+            elif no_of_toppings == 2:
+                return self.Topping2SmallPrice
+            elif no_of_toppings == 3:
+                return self.Topping3SmallPrice
+            else:
+                return self.SmallPrice
+        else:
+            if no_of_toppings == 1:
+                return self.Topping1LargePrice
+            elif no_of_toppings == 2:
+                return self.Topping2LargePrice
+            elif no_of_toppings == 3:
+                return self.Topping3LargePrice
+            else:
+                return self.LargePrice
 
-class SicilianPizza(SizableDish):
+
+class SicilianPizza(TemplateSicilianPizza):
     orders = models.ManyToManyField(Order, blank=True, related_name="sicilian_dish")
     toppings = models.ManyToManyField(Topping, blank=True, related_name="sic_dish")
     no_of_toppings = models.IntegerField( default = 0 )
 
+    def price(self):
+        if self.size == False:
+            if no_of_toppings == 1:
+                return self.Topping1SmallPrice
+            elif no_of_toppings == 2:
+                return self.Topping2SmallPrice
+            elif no_of_toppings == 3:
+                return self.Topping3SmallPrice
+            else:
+                return self.SmallPrice
+        else:
+            if no_of_toppings == 1:
+                return self.Topping1LargePrice
+            elif no_of_toppings == 2:
+                return self.Topping2LargePrice
+            elif no_of_toppings == 3:
+                return self.Topping3LargePrice
+            else:
+                return self.LargePrice
 
-class Sub(SizableDish):
+class Sub(TemplateSub):
     orders = models.ManyToManyField(Order, blank=True, related_name="subs0_dish")
-    Xcheese = models.ManyToManyField(ExtraCheese , related_name = "subs_dish")
+    Xcheese = models.BooleanField(default = False)
 
     def __str__(self):
         return f"{self.name} - Small:{self.SmallPrice} - Large:{self.LargePrice} - ExtraCheese:{self.XCheesePrice}"
 
-class DinnerPlatter(SizableDish):
+    def price(self):
+        if self.size == False:
+            if self.Xcheese == False:
+                return self.SmallPrice
+            else:
+                return self.SmallPrice + self.XCheesePrice
+        else:
+            if self.Xcheese == False:
+                return self.LargePrice
+            else:
+                return self.LargePrice + self.XCheesePrice
+
+class DinnerPlatter(TemplateDinnerPlatter):
     orders = models.ManyToManyField(Order, blank=True, related_name="din_dish")
-    pass
 
-class Pasta(NonSizableDish):
+    def price(self):
+        return self.SmallPrice
+
+class Pasta(TemplatePasta):
     orders = models.ManyToManyField(Order, blank=True, related_name="pasta_dish")
-    pass
 
-class Salad(NonSizableDish):
+    def price(self):
+        return self.SmallPrice
+
+class Salad(TemplateSalad):
     orders = models.ManyToManyField(Order, blank=True, related_name="salad_dish")
-    pass
+
+    def price(self):
+        return self.SmallPrice

@@ -4,10 +4,11 @@
 <h1>Hello, {{ user.first_name }}</h1>
 <ul>
     <li>Currently logged in as: {{ user.username }}</li>
+    <li>Order id: {{ order.id }}</li>
     <h3>Regular Pizza</h3>
       {% for item in RegularPizza %}
           <li>
-              <a href="">
+              <a href="{% url 'regular_pizza' order_id=order_id dish_id=RegularPizza.id %}" >
                   {{ item }}
               </a>
           </li>
@@ -15,7 +16,7 @@
     <h3>Sicilian Pizza</h3>
       {% for item in SicilianPizza %}
           <li>
-              <a href="">
+              <a href="{% url 'sicilian_pizza' order_id=order_id dish_id=SicilianPizza.id %}">
                   {{ item }}
               </a>
           </li>
@@ -23,7 +24,7 @@
     <h3>Subs</h3>
       {% for item in Sub %}
           <li>
-              <a href="">
+              <a href="{% url 'sub' order_id=order_id dish_id=Sub.id %}">
                   {{ item }}
               </a>
           </li>
@@ -31,7 +32,7 @@
     <h3>Pasta</h3>
       {% for item in Pasta %}
           <li>
-              <a href="">
+              <a href="{% url 'rest' order_id=order_id type_id=1 dish_id=Pasta.id %}">
                   {{ item }}
               </a>
           </li>
@@ -39,7 +40,7 @@
     <h3>Salads</h3>
       {% for item in Salad %}
           <li>
-              <a href="">
+              <a href="{% url 'rest' order_id=order_id type_id=2 dish_id=Salad.id %}">
                   {{ item }}
               </a>
           </li>
@@ -47,7 +48,7 @@
     <h3>Dinner Platter</h3>
       {% for item in DinnerPlatter %}
           <li>
-              <a href="">
+              <a href="{% url 'rest' order_id=order_id type_id=3 dish_id=DinnerPlatter.id %}">
                   {{ item }}
               </a>
           </li>
