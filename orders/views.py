@@ -9,11 +9,8 @@ from .models import Order , RegularPizza , SicilianPizza , Sub , DinnerPlatter ,
                     TemplateRegularPizza , TemplateSicilianPizza , TemplateSub , TemplateDinnerPlatter , TemplatePasta , TemplateSalad
 
 # Create your views here.
-
+@login_required
 def index(request , order_id):
-    @login_required
-    if not request.user.is_authenticated:
-        return render(request, "orders/login.html", {"message": None})
     context = {
         "user": request.user,
         "order_id": order.id,
@@ -63,8 +60,8 @@ def register(request):
 
 # dish_id is special or regular
 # order corresponds to which user order
+@login_required
 def regular_pizza(request , dish_id , order_id ):
-    @login_required
     order = Order.objects.get( pk = order_id )
     if request.method == 'GET':
         return render(request, "orders/index.html" , order_id = order_id)
@@ -89,8 +86,8 @@ def regular_pizza(request , dish_id , order_id ):
         pizza.save()
         return render(request , "orders/index.html", order_id = order_id)
 
-def sicilain_pizza(request , dish_id , order_id ):
-    @login_required
+@login_required
+def sicilian_pizza(request , dish_id , order_id ):
     order = Order.objects.get( pk = order_id )
     if request.method == 'GET':
         return render(request, "orders/index.html")
@@ -115,8 +112,8 @@ def sicilain_pizza(request , dish_id , order_id ):
         pizza.save()
         return render(request , "orders/index.html", order_id = order_id)
 
+@login_required
 def sub(request , dish_id , order_id ):
-    @login_required
     order = Order.objects.get( pk = order_id )
     if request.method == 'GET':
         return render(request, "orders/index.html", order_id = order_id)
@@ -137,8 +134,8 @@ def sub(request , dish_id , order_id ):
         sub.save()
         return render(request , "orders/index.html", order_id = order_id)
 
-def sub(request , type_id , dish_id , order_id ):
-    @login_required
+@login_required
+def rest(request , type_id , dish_id , order_id ):
     order = Order.objects.get( pk = order_id )
     if request.method == 'GET':
         return render(request, "orders/index.html", order_id = order_id)
@@ -166,27 +163,29 @@ def sub(request , type_id , dish_id , order_id ):
 
 # adds item to cart
 def cart(request):
-    @login_required
+    if not request.user.is_authenticated:
+        return render(request, "orders/login.html", {"message": None})
     order = Order.objects.filter( user = request.user ).last()
     if not order:
         order = Order.objects.create( user = request.user )
         order.save()
-        content = { order_id = order.id }
+        content = { "order_id": order.id }
         return render( request , "orders/cart.html" , content )
     elif order.buy:
         order = Order.objects.create( user = request.user )
         order.save()
-        content = { order_id = order.id }
+        content = { "order_id": order.id }
         return render( request , "orders/cart.html" , content )
     else:
         content = {
-            order_id = order.id,
-            regular_pizza = order.regular_dish.all(),
-            sicilian_pizza = order.sicilian_dish.all(),
-            sub = order.subs0_dish.all(),
-            pasta = order.pasta_dish.all(),
-            salad = order.salad_dish.all(),
-            dinner_platter = order.din_dish.all()
+            "order_id": order.id,
+            "regular_pizza": order.regular_dish.all(),
+            "sicilian_pizza": order.sicilian_dish.all(),
+            "sub": order.subs0_dish.all(),
+            "pasta": order.pasta_dish.all(),
+            "salad": order.salad_dish.all(),
+            "dinner_platter": order.din_dish.all(),
+            "total": order.price
         }
         return render( request , "orders/cart.html" , content )
 

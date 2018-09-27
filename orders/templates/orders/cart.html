@@ -41,7 +41,7 @@
               {{ item.name }}
           </li>
       {% endfor %}
-
+    <h3>Total: {{ total }}</h3>
     <h3>---------------------<h3>
     <li><a href="{% url 'index' order_id %}">Menu</a></li>
     <li><a href="{% url 'logout' %}">Logout</a></li>
