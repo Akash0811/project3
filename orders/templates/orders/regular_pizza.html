@@ -3,17 +3,18 @@
 {% block body %}
 <ul>
     <h3>Regular Pizza</h3>
-    <form action="{% url 'regular_pizza' %}" method="post">
+    <form action="{% url 'regular_pizza' order_id=order_id dish_id=dish_id %}" method="post">
         {% csrf_token %}
+        <h2> Size </h2>
         <input type="radio" name="size" value="Small"> Small<br>
         <input type="radio" name="size" value="Large"> Large<br>
+        <h2> Toppings </h2>
         {% for item in Topping %}
-            <li>
-                <input type="radio" name="topping" value="{{ item }}"> {{ item }}<br>
-            </li>
+            <input type='hidden' name="{{ item }}" value='No'>
+            <input type="checkbox" name="{{ item }}" value='Yes'> {{ item }}<br>
         {% endfor %}
         <input type="submit" value="Add"/>
     </form>
-    <li>Go Back<a href="{% url 'index' %}">Logout</a></li>
+    <li>Go Back<a href="{% url 'index' order_id %}">Index/Cart</a></li>
 </ul>
 {% endblock %}

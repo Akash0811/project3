@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class Order(models.Model):
     user = models.ForeignKey( User , on_delete=models.CASCADE )
     price = models.FloatField( default = 0.0 )
-    buy = models.BooleanField( default = False )
+    buy = models.BooleanField( default = False)
     time = now()
 
 class NonSizableDish(models.Model):
@@ -69,58 +69,58 @@ class TemplateSalad(NonSizableDish):
 This is displayed on cart , not on menu
 '''
 class RegularPizza(TemplateRegularPizza):
-    orders = models.ManyToManyField(Order, blank=True, related_name="regular_dish")
-    toppings = models.ManyToManyField(Topping, blank=True, related_name="reg_dish")
+    orders = models.ManyToManyField(Order, null = True , blank=True, related_name="regular_dish")
+    #toppings = models.ManyToManyField(Topping, null = True , blank=True, related_name="reg_dish")
     no_of_toppings = models.IntegerField( default = 0 )
 
     def price(self):
         if self.size == False:
-            if no_of_toppings == 1:
+            if self.no_of_toppings == 1:
                 return self.Topping1SmallPrice
-            elif no_of_toppings == 2:
+            elif self.no_of_toppings == 2:
                 return self.Topping2SmallPrice
-            elif no_of_toppings == 3:
+            elif self.no_of_toppings == 3:
                 return self.Topping3SmallPrice
             else:
                 return self.SmallPrice
         else:
-            if no_of_toppings == 1:
+            if self.no_of_toppings == 1:
                 return self.Topping1LargePrice
-            elif no_of_toppings == 2:
+            elif self.no_of_toppings == 2:
                 return self.Topping2LargePrice
-            elif no_of_toppings == 3:
+            elif self.no_of_toppings == 3:
                 return self.Topping3LargePrice
             else:
                 return self.LargePrice
 
 
 class SicilianPizza(TemplateSicilianPizza):
-    orders = models.ManyToManyField(Order, blank=True, related_name="sicilian_dish")
-    toppings = models.ManyToManyField(Topping, blank=True, related_name="sic_dish")
+    orders = models.ManyToManyField(Order, null = True , blank=True, related_name="sicilian_dish")
+    #toppings = models.ManyToManyField(Topping, blank=True, related_name="sic_dish")
     no_of_toppings = models.IntegerField( default = 0 )
 
     def price(self):
         if self.size == False:
-            if no_of_toppings == 1:
+            if self.no_of_toppings == 1:
                 return self.Topping1SmallPrice
-            elif no_of_toppings == 2:
+            elif self.no_of_toppings == 2:
                 return self.Topping2SmallPrice
-            elif no_of_toppings == 3:
+            elif self.no_of_toppings == 3:
                 return self.Topping3SmallPrice
             else:
                 return self.SmallPrice
         else:
-            if no_of_toppings == 1:
+            if self.no_of_toppings == 1:
                 return self.Topping1LargePrice
-            elif no_of_toppings == 2:
+            elif self.no_of_toppings == 2:
                 return self.Topping2LargePrice
-            elif no_of_toppings == 3:
+            elif self.no_of_toppings == 3:
                 return self.Topping3LargePrice
             else:
                 return self.LargePrice
 
 class Sub(TemplateSub):
-    orders = models.ManyToManyField(Order, blank=True, related_name="subs0_dish")
+    orders = models.ManyToManyField(Order, null = True , blank=True, related_name="subs0_dish")
     Xcheese = models.BooleanField(default = False)
 
     def __str__(self):
@@ -139,19 +139,19 @@ class Sub(TemplateSub):
                 return self.LargePrice + self.XCheesePrice
 
 class DinnerPlatter(TemplateDinnerPlatter):
-    orders = models.ManyToManyField(Order, blank=True, related_name="din_dish")
+    orders = models.ManyToManyField(Order, null = True , blank=True, related_name="din_dish")
 
     def price(self):
         return self.SmallPrice
 
 class Pasta(TemplatePasta):
-    orders = models.ManyToManyField(Order, blank=True, related_name="pasta_dish")
+    orders = models.ManyToManyField(Order, null = True , blank=True, related_name="pasta_dish")
 
     def price(self):
         return self.SmallPrice
 
 class Salad(TemplateSalad):
-    orders = models.ManyToManyField(Order, blank=True, related_name="salad_dish")
+    orders = models.ManyToManyField(Order, null = True , blank=True, related_name="salad_dish")
 
     def price(self):
         return self.SmallPrice

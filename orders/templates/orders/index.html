@@ -4,57 +4,46 @@
 <h1>Hello, {{ user.first_name }}</h1>
 <ul>
     <li>Currently logged in as: {{ user.username }}</li>
-    <li>Order id: {{ order.id }}</li>
+    <li>Order id: {{ order_id }}</li>
     <h3>Regular Pizza</h3>
-      {% for item in RegularPizza %}
+      {% for item in regular_pizza %}
           <li>
-              <a href="{% url 'regular_pizza' order_id=order_id dish_id=RegularPizza.id %}" >
-                  {{ item }}
-              </a>
+              Regular {{ item.name }}
           </li>
       {% endfor %}
     <h3>Sicilian Pizza</h3>
-      {% for item in SicilianPizza %}
+      {% for item in sicilian_pizza %}
           <li>
-              <a href="{% url 'sicilian_pizza' order_id=order_id dish_id=SicilianPizza.id %}">
-                  {{ item }}
-              </a>
+              Sicilian {{ item.name}}
           </li>
       {% endfor %}
     <h3>Subs</h3>
-      {% for item in Sub %}
+      {% for item in sub %}
           <li>
-              <a href="{% url 'sub' order_id=order_id dish_id=Sub.id %}">
-                  {{ item }}
-              </a>
+              {{ item.name }}
           </li>
       {% endfor %}
     <h3>Pasta</h3>
-      {% for item in Pasta %}
+      {% for item in pasta %}
           <li>
-              <a href="{% url 'rest' order_id=order_id type_id=1 dish_id=Pasta.id %}">
-                  {{ item }}
-              </a>
+              {{ item.name }}
           </li>
       {% endfor %}
     <h3>Salads</h3>
-      {% for item in Salad %}
+      {% for item in salad %}
           <li>
-              <a href="{% url 'rest' order_id=order_id type_id=2 dish_id=Salad.id %}">
-                  {{ item }}
-              </a>
+              {{ item.name }}
           </li>
       {% endfor %}
     <h3>Dinner Platter</h3>
-      {% for item in DinnerPlatter %}
+      {% for item in dinner_platter %}
           <li>
-              <a href="{% url 'rest' order_id=order_id type_id=3 dish_id=DinnerPlatter.id %}">
-                  {{ item }}
-              </a>
+              {{ item.name }}
           </li>
       {% endfor %}
-
+    <h3>Total: {{ total }}</h3>
     <h3>---------------------<h3>
+    <li><a href="{% url 'menu' order_id %}">Menu</a></li>
     <li><a href="{% url 'logout' %}">Logout</a></li>
 </ul>
 {% endblock %}

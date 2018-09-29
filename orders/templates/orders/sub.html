@@ -3,12 +3,14 @@
 {% block body %}
 <ul>
     <h3>Sub</h3>
-    <form action="{% url 'sub' %}" method="post">
+    <form action="{% url 'sub' order_id=order_id dish_id=dish_id %}" method="post">
         {% csrf_token %}
         <input type="radio" name="size" value="Small"> Small<br>
         <input type="radio" name="size" value="Large"> Large<br>
+        <input type='hidden' name="Xcheese" value='No'>
+        <input type="checkbox" name="Xcheese" value="Yes">ExtraCheese<br>
         <input type="submit" value="Add"/>
     </form>
-    <li>Go Back<a href="{% url 'index' %}">Logout</a></li>
+    <li>Go Back<a href="{% url 'index' order_id %}">Index/Cart</a></li>
 </ul>
 {% endblock %}
