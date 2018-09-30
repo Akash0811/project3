@@ -43,6 +43,19 @@ def menu(request , order_id):
     }
     return render(request, "orders/menu.html", context)
 
+# Confirm order
+def view(request , order_id):
+    if not request.user.is_authenticated:
+        return render(request, "orders/login.html", {"message": None})
+    order = Order.objects.get(pk = order_id)
+    order.buy = True
+    #confirmed = Confirmed_Order( order = order )
+    order.save()
+    #confirmed.save()
+    logout(request)
+    return render( request , "orders/login.html" , {"message": "Order Placed"}  )
+
+# Creates new objects
 def login_view(request):
     if request.method == 'GET':
         return render(request, "orders/login.html")
@@ -249,3 +262,18 @@ def rest(request , type_id , dish_id , order_id ):
 def logout_view(request):
     logout(request)
     return render(request, "orders/login.html", {"message": "Logged out."})
+
+'''
+View orders wich have buy == True
+Too complicated for use in admin.py
+'''
+@login_required
+def confirmed_orders( request ):
+    if request.user.is_superuser:
+        context = {
+            "orders": Order.objects.filter( buy = True ).all()
+        }
+        return render(request, "orders/confirmed_orders.html", context )
+    else:
+        logout(request)
+        return render(request, "orders/login.html", {"message": "Forbidden"})

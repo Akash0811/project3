@@ -12,5 +12,7 @@ urlpatterns = [
     path("<int:order_id>/<int:dish_id>/sub", views.sub, name="sub"),
     path("<int:order_id>/<int:dish_id>/regular_pizza", views.regular_pizza, name="regular_pizza"),
     path("<int:order_id>/<int:dish_id>/sicilian_pizza", views.sicilian_pizza, name="sicilian_pizza"),
+    path("<int:order_id>/view", views.view, name="view"),
+    path("", views.login_view, name="login"),
+    path("confirmed_orders", views.confirmed_orders, name="confirmed_orders"),
 ]
-#path("<int:order_id>/<int:dish_id>/reg_pizza1", views.reg_pizza1, name="reg_pizza1"),
