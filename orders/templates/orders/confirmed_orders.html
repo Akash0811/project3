@@ -9,37 +9,37 @@
       <h3>Regular Pizza</h3>
         {% for item in order.regular_dish.all %}
             <li>
-                Regular {{ item.name }}
+                Regular Pizza {{ item }}
             </li>
         {% endfor %}
       <h3>Sicilian Pizza</h3>
         {% for item in order.sicilian_dish.all %}
             <li>
-                Sicilian {{ item.name}}
+                Sicilian Pizza {{ item}} Pizza
             </li>
         {% endfor %}
       <h3>Subs</h3>
         {% for item in order.subs0_dish.all %}
             <li>
-                {{ item.name }}
+                {{ item }}
             </li>
         {% endfor %}
       <h3>Pasta</h3>
         {% for item in order.pasta_dish.all %}
             <li>
-                {{ item.name }}
+                {{ item }}
             </li>
         {% endfor %}
       <h3>Salads</h3>
         {% for item in order.salad_dish.all %}
             <li>
-                {{ item.name }}
+                {{ item }}
             </li>
         {% endfor %}
       <h3>Dinner Platter</h3>
         {% for item in order.din_dish.all %}
             <li>
-                {{ item.name }}
+                {{ item }}
             </li>
         {% endfor %}
       <h3>Total: {{ order.price }}</h3>

@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 
 from .models import Order , RegularPizza , SicilianPizza , Sub , DinnerPlatter , Pasta , Salad , Topping ,\
                     TemplateRegularPizza , TemplateSicilianPizza , TemplateSub , TemplateDinnerPlatter , TemplatePasta , TemplateSalad,\
@@ -49,10 +50,19 @@ def view(request , order_id):
         return render(request, "orders/login.html", {"message": None})
     order = Order.objects.get(pk = order_id)
     order.buy = True
-    #confirmed = Confirmed_Order( order = order )
     order.save()
-    #confirmed.save()
     logout(request)
+    '''
+    Provide host username and password in settings.py
+    Also turn on less_secure_apps functionality on gmail
+    '''
+    send_mail(
+        'Order Confirmed',
+        f'Your order no {order.id} is confirmed',
+        '',
+        [f'{order.user.email}'],
+        fail_silently=False,
+        )
     return render( request , "orders/login.html" , {"message": "Order Placed"}  )
 
 # Creates new objects
@@ -123,6 +133,7 @@ def regular_pizza(request , dish_id , order_id ):
     for topping in Topping.objects.all():
         #print(request.POST[topping.name])
         if request.POST[topping.name] == 'Yes':
+            pizza.toppings.add(topping)
             count += 1
     pizza.no_of_toppings = count
     pizza.orders.add(order)
@@ -163,6 +174,7 @@ def sicilian_pizza(request , dish_id , order_id ):
     for topping in Topping.objects.all():
         #print(request.POST[topping.name])
         if request.POST[topping.name] == 'Yes':
+            pizza.toppings.add(topping)
             count += 1
     pizza.no_of_toppings = count
     pizza.orders.add(order)

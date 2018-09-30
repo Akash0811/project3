@@ -70,8 +70,14 @@ This is displayed on cart , not on menu
 '''
 class RegularPizza(TemplateRegularPizza):
     orders = models.ManyToManyField(Order, null = True , blank=True, related_name="regular_dish")
-    #toppings = models.ManyToManyField(Topping, null = True , blank=True, related_name="reg_dish")
+    toppings = models.ManyToManyField(Topping, null = True , blank=True, related_name="reg_dish")
     no_of_toppings = models.IntegerField( default = 0 )
+
+    def __str__(self):
+        s="Toppings : "
+        for topping in self.toppings.all():
+            s += f" {topping.name}"
+        return f"{self.name} - Small Size:{self.size} - {s} - Price:{self.price()}"
 
     def price(self):
         if self.size == False:
@@ -96,8 +102,14 @@ class RegularPizza(TemplateRegularPizza):
 
 class SicilianPizza(TemplateSicilianPizza):
     orders = models.ManyToManyField(Order, null = True , blank=True, related_name="sicilian_dish")
-    #toppings = models.ManyToManyField(Topping, blank=True, related_name="sic_dish")
+    toppings = models.ManyToManyField(Topping, blank=True, related_name="sic_dish")
     no_of_toppings = models.IntegerField( default = 0 )
+
+    def __str__(self):
+        s="Toppings : "
+        for topping in self.toppings.all():
+            s += "{topping.name}"
+        return f"{self.name} - Small Size:{self.size} - {s} - Price:{self.price()}"
 
     def price(self):
         if self.size == False:
@@ -124,7 +136,7 @@ class Sub(TemplateSub):
     Xcheese = models.BooleanField(default = False)
 
     def __str__(self):
-        return f"{self.name} - Small:{self.SmallPrice} - Large:{self.LargePrice} - ExtraCheese:{self.XCheesePrice}"
+        return f"{self.name} - Small Size:{self.size} - ExtraCheese:{self.Xcheese} - Price:{self.price()}"
 
     def price(self):
         if self.size == False:
@@ -141,17 +153,26 @@ class Sub(TemplateSub):
 class DinnerPlatter(TemplateDinnerPlatter):
     orders = models.ManyToManyField(Order, null = True , blank=True, related_name="din_dish")
 
+    def __str__(self):
+        return f"{self.name} - Small Size:{self.size} - Price:{self.price()}"
+
     def price(self):
         return self.SmallPrice
 
 class Pasta(TemplatePasta):
     orders = models.ManyToManyField(Order, null = True , blank=True, related_name="pasta_dish")
 
+    def __str__(self):
+        return f"{self.name} - Price:{self.price()}"
+
     def price(self):
         return self.SmallPrice
 
 class Salad(TemplateSalad):
     orders = models.ManyToManyField(Order, null = True , blank=True, related_name="salad_dish")
+
+    def __str__(self):
+        return f"{self.name} - Price:{self.price()}"
 
     def price(self):
         return self.SmallPrice
