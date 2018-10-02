@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+{% extends 'admin/change_list.html' %}
+
+{% block content_title %}
+    <h1> Sales Summary </h1>
+{% endblock %}
+
+{% block result_list %}
+    <div class="results">
+    <table>
+
+    <thead>
+      <tr>
+        <th>
+          <div class="text">
+            <a href="#">Username</a>
+          </div>
+        </th>
+        <th>
+          <div class="text">
+            <a href="#">Order_id</a>
+          </div>
+        </th>
+        <th>
+          <div class="text">
+            <a href="#">Dishes</a>
+          </div>
+        </th>
+        <th>
+          <div class="text">
+            <a href="#">
+              <strong>Price</strong>
+            </a>
+          </div>
+        </th>
+        <th>
+          <div class="text">
+            <a href="#">
+              <strong>Total</strong>
+            </a>
+          </div>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for order in orders %}
+      <tr class="{% cycle 'row1' 'row2' %}">
+        <td> {{ order.user.username }} </td>
+        <td> {{ order.id }} </td>
+        <td>
+          <table>
+            <h3>Regular Pizza</h3>
+            {% for item in order.regular_dish.all %}
+            <tr>
+              <td>
+                Regular Pizza {{ item }}
+              </td>
+              <td>
+                {{ item.price }}
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+          <table>
+            <h3>Sicilian Pizza</h3>
+            {% for item in order.sicilian_dish.all %}
+            <tr>
+              <td>
+                Sicilian Pizza {{ item }}
+              </td>
+              <td>
+                {{ item.price }}
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+          <table>
+            <h3>Subs</h3>
+            {% for item in order.subs0_dish.all %}
+            <tr>
+              <td>
+                {{ item }}
+              </td>
+              <td>
+                {{ item.price }}
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+          <table>
+            <h3>Pasta</h3>
+            {% for item in order.pasta_dish.all %}
+            <tr>
+              <td>
+                {{ item }}
+              </td>
+              <td>
+                {{ item.price }}
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+          <table>
+            <h3>Salads</h3>
+            {% for item in order.salad_dish.all %}
+            <tr>
+              <td>
+                {{ item }}
+              </td>
+              <td>
+                {{ item.price }}
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+          <table>
+            <h3>Dinner Platter</h3>
+            {% for item in order.din_dish.all %}
+            <tr>
+              <td>
+                {{ item }}
+              </td>
+              <td>
+                {{ item.price }}
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+        </td>
+        <td>
+          <strong>
+          {{ order.price }}
+          </strong>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+</div>
+{% endblock %}
+
+{% block pagination %}{% endblock %}
