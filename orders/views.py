@@ -7,8 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 
 from .models import Order , RegularPizza , SicilianPizza , Sub , DinnerPlatter , Pasta , Salad , Topping ,\
-                    TemplateRegularPizza , TemplateSicilianPizza , TemplateSub , TemplateDinnerPlatter , TemplatePasta , TemplateSalad,\
-                    SizableDish , NonSizableDish
+                    TemplateRegularPizza , TemplateSicilianPizza , TemplateSub , TemplateDinnerPlatter , TemplatePasta , TemplateSalad
 
 # adds item to cart
 def index(request , order_id):
@@ -35,12 +34,12 @@ def menu(request , order_id):
     context = {
         "user": request.user,
         "order_id": order.id,
-        "RegularPizza": TemplateRegularPizza.objects.all()[:2],
-        "SicilianPizza": TemplateSicilianPizza.objects.all()[:2],
-        "Sub": TemplateSub.objects.all()[:18],
-        "Pasta": TemplatePasta.objects.all()[:3],
-        "Salad": TemplateSalad.objects.all()[:4],
-        "DinnerPlatter": TemplateDinnerPlatter.objects.all()[:6]
+        "RegularPizza": TemplateRegularPizza.objects.all(),
+        "SicilianPizza": TemplateSicilianPizza.objects.all(),
+        "Sub": TemplateSub.objects.all(),
+        "Pasta": TemplatePasta.objects.all(),
+        "Salad": TemplateSalad.objects.all(),
+        "DinnerPlatter": TemplateDinnerPlatter.objects.all(),
     }
     return render(request, "orders/menu.html", context)
 
@@ -56,13 +55,6 @@ def view(request , order_id):
     Provide host username and password in settings.py
     Also turn on less_secure_apps functionality on gmail
     '''
-    send_mail(
-        'Order Confirmed',
-        f'Your order no {order.id} is confirmed',
-        '',
-        [f'{order.user.email}'],
-        fail_silently=False,
-        )
     return render( request , "orders/login.html" , {"message": "Order Placed"}  )
 
 # Creates new objects
@@ -107,6 +99,7 @@ def register(request):
 
 # dish_id is special or regular
 # order corresponds to which user order
+# dish_id is template id
 
 @login_required
 def regular_pizza(request , dish_id , order_id ):
@@ -120,34 +113,25 @@ def regular_pizza(request , dish_id , order_id ):
         return render( request , "orders/regular_pizza.html" , context)
     size = request.POST["size"]
     template = TemplateRegularPizza.objects.get( pk = dish_id )
-    pizza = RegularPizza.objects.create( name = template.name ,
-                                        SmallPrice = template.SmallPrice,
-                                        LargePrice = template.LargePrice,
-                                        Topping1SmallPrice = template.Topping1SmallPrice,
-                                        Topping2SmallPrice = template.Topping2SmallPrice,
-                                        Topping3SmallPrice = template.Topping3SmallPrice,
-                                        Topping1LargePrice = template.Topping1LargePrice,
-                                        Topping2LargePrice = template.Topping2LargePrice,
-                                        Topping3LargePrice = template.Topping3LargePrice)
+    pizza = RegularPizza.objects.create(orders = order,
+                                        template = template)
     count = 0
+    string = "Topping(s): "
     for topping in Topping.objects.all():
-        #print(request.POST[topping.name])
         if request.POST[topping.name] == 'Yes':
             pizza.toppings.add(topping)
+            string += f" {topping.name}"
             count += 1
     pizza.no_of_toppings = count
-    pizza.orders.add(order)
+    pizza.string = string
     if size == "Small":
         order.price += pizza.price()
-        pizza.save()
-        order.save()
-        return HttpResponseRedirect(reverse("menu", args=(order_id,)))
     else:
         pizza.size = True
         order.price += pizza.price()
-        pizza.save()
-        order.save()
-        return HttpResponseRedirect(reverse("menu", args=(order_id,)))
+    pizza.save()
+    order.save()
+    return HttpResponseRedirect(reverse("menu", args=(order_id,)))
 
 @login_required
 def sicilian_pizza(request , dish_id , order_id ):
@@ -161,34 +145,25 @@ def sicilian_pizza(request , dish_id , order_id ):
         return render( request , "orders/sicilian_pizza.html" , context)
     size = request.POST["size"]
     template = TemplateSicilianPizza.objects.get( pk = dish_id )
-    pizza = SicilianPizza.objects.create( name = template.name ,
-                                        SmallPrice = template.SmallPrice,
-                                        LargePrice = template.LargePrice,
-                                        Topping1SmallPrice = template.Topping1SmallPrice,
-                                        Topping2SmallPrice = template.Topping2SmallPrice,
-                                        Topping3SmallPrice = template.Topping3SmallPrice,
-                                        Topping1LargePrice = template.Topping1LargePrice,
-                                        Topping2LargePrice = template.Topping2LargePrice,
-                                        Topping3LargePrice = template.Topping3LargePrice)
+    pizza = SicilianPizza.objects.create(orders = order,
+                                         template = template)
     count = 0
+    string = "Topping(s): "
     for topping in Topping.objects.all():
-        #print(request.POST[topping.name])
         if request.POST[topping.name] == 'Yes':
             pizza.toppings.add(topping)
+            string += f" {topping.name}"
             count += 1
     pizza.no_of_toppings = count
-    pizza.orders.add(order)
+    pizza.string = string
     if size == "Small":
         order.price += pizza.price()
-        pizza.save()
-        order.save()
-        return HttpResponseRedirect(reverse("menu", args=(order_id,)))
     else:
         pizza.size = True
         order.price += pizza.price()
-        pizza.save()
-        order.save()
-        return HttpResponseRedirect(reverse("menu", args=(order_id,)))
+    pizza.save()
+    order.save()
+    return HttpResponseRedirect(reverse("menu", args=(order_id,)))
 
 @login_required
 def sub(request , dish_id , order_id ):
@@ -202,24 +177,18 @@ def sub(request , dish_id , order_id ):
     size = request.POST["size"]
     Xcheese = request.POST["Xcheese"]
     template = TemplateSub.objects.get( pk = dish_id )
-    sub = Sub.objects.create( name = template.name,
-                            SmallPrice = template.SmallPrice,
-                            LargePrice = template.LargePrice,
-                            XCheesePrice = template.XCheesePrice)
-    sub.orders.add(order)
+    sub = Sub.objects.create( orders=order,
+                              template=template)
     if Xcheese == "Yes":
         sub.Xcheese = True
     if size == "Small":
         order.price += sub.price()
-        sub.save()
-        order.save()
-        return HttpResponseRedirect(reverse("menu", args=(order_id,)))
     else:
         sub.size = True
         order.price += sub.price()
-        sub.save()
-        order.save()
-        return HttpResponseRedirect(reverse("menu", args=(order_id,)))
+    sub.save()
+    order.save()
+    return HttpResponseRedirect(reverse("menu", args=(order_id,)))
 
 @login_required
 def rest(request , type_id , dish_id , order_id ):
@@ -231,45 +200,33 @@ def rest(request , type_id , dish_id , order_id ):
             "type_id": type_id
         }
         return render( request , "orders/rest.html" , context)
-    if type_id ==1:
+    if type_id == 1:
         template = TemplatePasta.objects.get( pk = dish_id )
-        pasta = Pasta.objects.create( name = template.name,
-                                    SmallPrice = template.SmallPrice)
-        pasta.orders.add(order)
+        pasta = Pasta.objects.create( orders=order,
+                                      template=template)
         order.price += pasta.price()
         pasta.save()
-        order.save()
-        return HttpResponseRedirect(reverse("menu", args=(order_id,)))
-    elif type_id ==2:
+    elif type_id == 2:
         template = TemplateSalad.objects.get( pk = dish_id )
-        salad = Salad.objects.create( name = template.name ,
-                                    SmallPrice = template.SmallPrice)
-        salad.orders.add(order)
+        salad = Salad.objects.create( orders=order,
+                                      template=template)
         order.price += salad.price()
         salad.save()
-        order.save()
-        return HttpResponseRedirect(reverse("menu", args=(order_id,)))
     elif type_id == 3:
         template = TemplateDinnerPlatter.objects.get( pk = dish_id )
-        dinner = DinnerPlatter.objects.create( name = template.name,
-                                                SmallPrice = template.SmallPrice,
-                                                LargePrice = template.LargePrice)
-        dinner.orders.add(order)
+        dinner = DinnerPlatter.objects.create( orders=order,
+                                               template=template)
         order.price += dinner.price()
         dinner.save()
-        order.save()
-        return HttpResponseRedirect(reverse("menu", args=(order_id,)))
     else:
         template = TemplateDinnerPlatter.objects.get( pk = dish_id )
-        dinner = DinnerPlatter.objects.create( name = template.name,
-                                                SmallPrice = template.SmallPrice,
-                                                LargePrice = template.LargePrice)
-        dinner.size = True
-        dinner.orders.add(order)
+        dinner = DinnerPlatter.objects.create( size=True,
+                                               orders=order,
+                                               template=template)
         order.price += dinner.price()
         dinner.save()
-        order.save()
-        return HttpResponseRedirect(reverse("menu", args=(order_id,)))
+    order.save()
+    return HttpResponseRedirect(reverse("menu", args=(order_id,)))
 
 def logout_view(request):
     logout(request)
