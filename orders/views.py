@@ -4,7 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+#from django.core.mail import send_mail
+from .forms import SignUpForm
 
 from .models import Order , RegularPizza , SicilianPizza , Sub , DinnerPlatter , Pasta , Salad , Topping ,\
                     TemplateRegularPizza , TemplateSicilianPizza , TemplateSub , TemplateDinnerPlatter , TemplatePasta , TemplateSalad
@@ -75,6 +76,7 @@ def login_view(request):
     else:
         return render(request, "orders/login.html", {"message": "Invalid credentials."})
 
+'''
 def register(request):
     logout(request)
     if request.method == 'GET':
@@ -96,6 +98,17 @@ def register(request):
         return render(request, "orders/login.html", {"message": None})
     else:
         return render(request, "orders/register.html", {"message": "Please fill Entire Form"})
+'''
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('login')
+    else:
+        form = SignUpForm()
+    return render(request, 'orders/register.html', {'form': form})
 
 # dish_id is special or regular
 # order corresponds to which user order
@@ -228,9 +241,11 @@ def rest(request , type_id , dish_id , order_id ):
     order.save()
     return HttpResponseRedirect(reverse("menu", args=(order_id,)))
 
+'''
 def logout_view(request):
     logout(request)
     return render(request, "orders/login.html", {"message": "Logged out."})
+'''
 
 '''
 View orders wich have buy == True
