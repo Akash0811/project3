@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render , get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 #from django.core.mail import send_mail
@@ -14,7 +14,7 @@ from .models import Order , RegularPizza , SicilianPizza , Sub , DinnerPlatter ,
 def index(request , order_id):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html", {"message": None})
-    order = Order.objects.get(pk = order_id)
+    order = get_object_or_404(Order , pk = order_id)
     content = {
         "order_id": order.id,
         "regular_pizza": order.regular_dish.all(),
@@ -31,7 +31,7 @@ def index(request , order_id):
 def menu(request , order_id):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html", {"message": None})
-    order = Order.objects.get(pk = order_id)
+    order = get_object_or_404(Order , pk = order_id)
     context = {
         "user": request.user,
         "order_id": order.id,
@@ -48,7 +48,7 @@ def menu(request , order_id):
 def view(request , order_id):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html", {"message": None})
-    order = Order.objects.get(pk = order_id)
+    order = get_object_or_404(Order , pk = order_id)
     order.buy = True
     order.save()
     logout(request)
@@ -116,7 +116,7 @@ def signup(request):
 
 @login_required
 def regular_pizza(request , dish_id , order_id ):
-    order = Order.objects.get( pk = order_id )
+    order = get_object_or_404(Order , pk = order_id)
     if request.method == 'GET':
         context = {
             "order_id": order_id,
@@ -125,7 +125,7 @@ def regular_pizza(request , dish_id , order_id ):
         }
         return render( request , "orders/regular_pizza.html" , context)
     size = request.POST["size"]
-    template = TemplateRegularPizza.objects.get( pk = dish_id )
+    template = get_object_or_404(TemplateRegularPizza , pk = dish_id)
     pizza = RegularPizza.objects.create(orders = order,
                                         template = template)
     count = 0
@@ -148,7 +148,7 @@ def regular_pizza(request , dish_id , order_id ):
 
 @login_required
 def sicilian_pizza(request , dish_id , order_id ):
-    order = Order.objects.get( pk = order_id )
+    order = get_object_or_404(Order , pk = order_id)
     if request.method == 'GET':
         context = {
             "order_id": order_id,
@@ -157,7 +157,7 @@ def sicilian_pizza(request , dish_id , order_id ):
         }
         return render( request , "orders/sicilian_pizza.html" , context)
     size = request.POST["size"]
-    template = TemplateSicilianPizza.objects.get( pk = dish_id )
+    template = get_object_or_404(TemplateSicilianPizza , pk = dish_id)
     pizza = SicilianPizza.objects.create(orders = order,
                                          template = template)
     count = 0
@@ -180,7 +180,7 @@ def sicilian_pizza(request , dish_id , order_id ):
 
 @login_required
 def sub(request , dish_id , order_id ):
-    order = Order.objects.get( pk = order_id )
+    order = get_object_or_404(Order , pk = order_id)
     if request.method == 'GET':
         context = {
             "order_id": order_id,
@@ -189,7 +189,7 @@ def sub(request , dish_id , order_id ):
         return render( request , "orders/sub.html" , context)
     size = request.POST["size"]
     Xcheese = request.POST["Xcheese"]
-    template = TemplateSub.objects.get( pk = dish_id )
+    template = get_object_or_404(TemplateSub , pk = dish_id)
     sub = Sub.objects.create( orders=order,
                               template=template)
     if Xcheese == "Yes":
@@ -205,7 +205,7 @@ def sub(request , dish_id , order_id ):
 
 @login_required
 def rest(request , type_id , dish_id , order_id ):
-    order = Order.objects.get( pk = order_id )
+    order = get_object_or_404(Order , pk = order_id)
     if request.method == 'GET':
         context = {
             "order_id": order_id,
@@ -214,25 +214,25 @@ def rest(request , type_id , dish_id , order_id ):
         }
         return render( request , "orders/rest.html" , context)
     if type_id == 1:
-        template = TemplatePasta.objects.get( pk = dish_id )
+        template = get_object_or_404(TemplatePasta , pk = dish_id)
         pasta = Pasta.objects.create( orders=order,
                                       template=template)
         order.price += pasta.price()
         pasta.save()
     elif type_id == 2:
-        template = TemplateSalad.objects.get( pk = dish_id )
+        template = get_object_or_404(TemplateSalad , pk = dish_id)
         salad = Salad.objects.create( orders=order,
                                       template=template)
         order.price += salad.price()
         salad.save()
     elif type_id == 3:
-        template = TemplateDinnerPlatter.objects.get( pk = dish_id )
+        template = get_object_or_404(TemplateDinnerPlatter , pk = dish_id)
         dinner = DinnerPlatter.objects.create( orders=order,
                                                template=template)
         order.price += dinner.price()
         dinner.save()
     else:
-        template = TemplateDinnerPlatter.objects.get( pk = dish_id )
+        template = get_object_or_404(TemplateDinnerPlatter , pk = dish_id)
         dinner = DinnerPlatter.objects.create( size=True,
                                                orders=order,
                                                template=template)
@@ -249,7 +249,7 @@ def logout_view(request):
 
 '''
 View orders wich have buy == True
-Too complicated for use in admin.py
+Done for use in admin.py
 '''
 @login_required
 def confirmed_orders( request ):
