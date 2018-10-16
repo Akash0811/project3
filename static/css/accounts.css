@@ -1,5 +1,13 @@
 body {
-  background-image: url(../img/pizza.jpg);
+  background-image:{
+    url(../img/pizza.jpg);
+    opacity: 0.2;
+  }
+}
+
+img {
+    opacity: 0.2;
+    filter: alpha(opacity=50); /* For IE8 and earlier */
 }
 
 .logo {

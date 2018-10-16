@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render , get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
 #from django.core.mail import send_mail
 from .forms import SignUpForm
 
@@ -23,11 +24,12 @@ def index(request , order_id):
         "pasta": order.pasta_dish.all(),
         "salad": order.salad_dish.all(),
         "dinner_platter": order.din_dish.all(),
-        "total": float("{0:.2f}".format(order.price))
+        "total": order.price
     }
     return render( request , "orders/index.html" , content  )
 
 # Create your views here.
+'''
 def menu(request , order_id):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html", {"message": None})
@@ -43,6 +45,24 @@ def menu(request , order_id):
         "DinnerPlatter": TemplateDinnerPlatter.objects.all(),
     }
     return render(request, "orders/menu.html", context)
+'''
+
+class MenuListView(TemplateView):
+    template_name = 'orders/menu.html'
+    def get_context_data(self , *args , **kwargs):
+        order = get_object_or_404(Order , pk = self.kwargs['order_id'])
+        context = super(MenuListView, self).get_context_data(**kwargs)
+        context = {
+            "user": self.request.user,
+            "order_id": order.id,
+            "RegularPizza": TemplateRegularPizza.objects.all(),
+            "SicilianPizza": TemplateSicilianPizza.objects.all(),
+            "Sub": TemplateSub.objects.all(),
+            "Pasta": TemplatePasta.objects.all(),
+            "Salad": TemplateSalad.objects.all(),
+            "DinnerPlatter": TemplateDinnerPlatter.objects.all(),
+        }
+        return context
 
 # Confirm order
 def view(request , order_id):
