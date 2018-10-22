@@ -5,58 +5,72 @@
 <ul>
     <li>Currently logged in as: {{ user.username }}</li>
     <li>Order id: {{ order_id }}</li>
-    <h3>Regular Pizza</h3>
-      {% for item in RegularPizza %}
-          <li>
-              <a href="{% url 'regular_pizza' order_id=order_id dish_id=item.id %}" >
-                  {{ item }}
-              </a>
-          </li>
-      {% endfor %}
-    <h3>Sicilian Pizza</h3>
-      {% for item in SicilianPizza %}
-          <li>
-              <a href="{% url 'sicilian_pizza' order_id=order_id dish_id=item.id  %}">
-                  {{ item }}
-              </a>
-          </li>
-      {% endfor %}
-    <h3>Subs</h3>
-      {% for item in Sub %}
-          <li>
-              <a href="{% url 'sub' order_id=order_id dish_id=item.id %}">
-                  {{ item }}
-              </a>
-          </li>
-      {% endfor %}
-    <h3>Pasta</h3>
-      {% for item in Pasta %}
-          <li>
-              <a href="{% url 'rest' order_id=order_id type_id=1 dish_id=item.id %}">
-                  {{ item }}
-              </a>
-          </li>
-      {% endfor %}
-    <h3>Salads</h3>
-      {% for item in Salad %}
-          <li>
-              <a href="{% url 'rest' order_id=order_id type_id=2 dish_id=item.id  %}">
-                  {{ item }}
-              </a>
-          </li>
-      {% endfor %}
-    <h3>Dinner Platter</h3>
-      {% for item in DinnerPlatter %}
-          <li>
-            {{ item }}
-              <a href="{% url 'rest' order_id=order_id type_id=3 dish_id=item.id  %}">
-                   Small
-              </a>
-              <a href="{% url 'rest' order_id=order_id type_id=4 dish_id=item.id  %}">
-                   Large
-              </a>
-          </li>
-      {% endfor %}
+    <div class="d-flex align-content-around flex-wrap">
+      <div class="p-5 bd-highlight">
+        <h3>Regular Pizza</h3>
+          {% for item in RegularPizza %}
+              <li>
+                  <a href="{% url 'regular_pizza' order_id=order_id dish_id=item.id %}" >
+                      {{ item }}
+                  </a>
+              </li>
+          {% endfor %}
+      </div>
+      <div class="p-5 bd-highlight">
+        <h3>Sicilian Pizza</h3>
+          {% for item in SicilianPizza %}
+              <li>
+                  <a href="{% url 'sicilian_pizza' order_id=order_id dish_id=item.id  %}">
+                      {{ item }}
+                  </a>
+              </li>
+          {% endfor %}
+      </div>
+      <div class="p-5 bd-highlight">
+        <h3>Subs</h3>
+          {% for item in Sub %}
+              <li>
+                  <a href="{% url 'sub' order_id=order_id dish_id=item.id %}">
+                      {{ item }}
+                  </a>
+              </li>
+          {% endfor %}
+      </div>
+      <div class="p-5 bd-highlight">
+        <h3>Pasta</h3>
+          {% for item in Pasta %}
+              <li>
+                  <a href="{% url 'rest' order_id=order_id type_id=1 dish_id=item.id %}">
+                      {{ item }}
+                  </a>
+              </li>
+          {% endfor %}
+      </div>
+      <div class="p-5 bd-highlight">
+        <h3>Salads</h3>
+          {% for item in Salad %}
+              <li>
+                  <a href="{% url 'rest' order_id=order_id type_id=2 dish_id=item.id  %}">
+                      {{ item }}
+                  </a>
+              </li>
+          {% endfor %}
+      </div>
+      <div class="p-5 bd-highlight">
+        <h3>Dinner Platter</h3>
+          {% for item in DinnerPlatter %}
+              <li>
+                {{ item }}
+                  <a href="{% url 'rest' order_id=order_id type_id=3 dish_id=item.id  %}">
+                       Small
+                  </a>
+                  <a href="{% url 'rest' order_id=order_id type_id=4 dish_id=item.id  %}">
+                       Large
+                  </a>
+              </li>
+          {% endfor %}
+      </div>
+    </div>
 
     <h3>---------------------<h3>
     <li><a href="{% url 'index' order_id %}">Cart/Index</a></li>

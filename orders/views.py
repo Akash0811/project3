@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect , HttpResponseForbidden
 from django.shortcuts import render , get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -16,6 +16,8 @@ def index(request , order_id):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html", {"message": None})
     order = get_object_or_404(Order , pk = order_id)
+    if order.user != request.user:
+        return HttpResponseForbidden("Forbidden")
     content = {
         "order_id": order.id,
         "regular_pizza": order.regular_dish.all(),
@@ -49,6 +51,11 @@ def menu(request , order_id):
 
 class MenuListView(TemplateView):
     template_name = 'orders/menu.html'
+    def get(self , *args , **kwargs):
+        order = get_object_or_404(Order , pk = self.kwargs['order_id'])
+        if order.user != self.request.user:
+            return HttpResponseForbidden("Forbidden")
+        return super(MenuListView , self).get(*args , **kwargs)
     def get_context_data(self , *args , **kwargs):
         order = get_object_or_404(Order , pk = self.kwargs['order_id'])
         context = super(MenuListView, self).get_context_data(**kwargs)
@@ -69,6 +76,8 @@ def view(request , order_id):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html", {"message": None})
     order = get_object_or_404(Order , pk = order_id)
+    if order.user != request.user:
+        return HttpResponseForbidden("Forbidden")
     order.buy = True
     order.save()
     logout(request)
@@ -137,6 +146,8 @@ def signup(request):
 @login_required
 def regular_pizza(request , dish_id , order_id ):
     order = get_object_or_404(Order , pk = order_id)
+    if order.user != request.user:
+        return HttpResponseForbidden("Forbidden")
     if request.method == 'GET':
         context = {
             "order_id": order_id,
@@ -169,6 +180,8 @@ def regular_pizza(request , dish_id , order_id ):
 @login_required
 def sicilian_pizza(request , dish_id , order_id ):
     order = get_object_or_404(Order , pk = order_id)
+    if order.user != request.user:
+        return HttpResponseForbidden("Forbidden")
     if request.method == 'GET':
         context = {
             "order_id": order_id,
@@ -201,6 +214,8 @@ def sicilian_pizza(request , dish_id , order_id ):
 @login_required
 def sub(request , dish_id , order_id ):
     order = get_object_or_404(Order , pk = order_id)
+    if order.user != request.user:
+        return HttpResponseForbidden("Forbidden")
     if request.method == 'GET':
         context = {
             "order_id": order_id,
@@ -226,6 +241,8 @@ def sub(request , dish_id , order_id ):
 @login_required
 def rest(request , type_id , dish_id , order_id ):
     order = get_object_or_404(Order , pk = order_id)
+    if order.user != request.user:
+        return HttpResponseForbidden("Forbidden")
     if request.method == 'GET':
         context = {
             "order_id": order_id,
