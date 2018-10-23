@@ -156,6 +156,8 @@ def regular_pizza(request , dish_id , order_id ):
         }
         return render( request , "orders/regular_pizza.html" , context)
     size = request.POST["size"]
+    if size == "NoEntry":
+        return HttpResponseForbidden("Please provide size")
     template = get_object_or_404(TemplateRegularPizza , pk = dish_id)
     pizza = RegularPizza.objects.create(orders = order,
                                         template = template)
@@ -167,6 +169,12 @@ def regular_pizza(request , dish_id , order_id ):
             string += f" {topping.name}"
             count += 1
     pizza.no_of_toppings = count
+    if pizza.template.name != 'Special' and count > 3:
+        pizza.delete()
+        return HttpResponseForbidden("Can only add a maximum of 3 toppings")
+    if pizza.template.name == 'Special' and count > 5:
+        pizza.delete()
+        return HttpResponseForbidden("Special Pizza can have a maximum of 5 toppings")
     pizza.string = string
     if size == "Small":
         order.price += pizza.price()
@@ -190,6 +198,8 @@ def sicilian_pizza(request , dish_id , order_id ):
         }
         return render( request , "orders/sicilian_pizza.html" , context)
     size = request.POST["size"]
+    if size == "NoEntry":
+        return HttpResponseForbidden("Please provide size")
     template = get_object_or_404(TemplateSicilianPizza , pk = dish_id)
     pizza = SicilianPizza.objects.create(orders = order,
                                          template = template)
@@ -201,6 +211,12 @@ def sicilian_pizza(request , dish_id , order_id ):
             string += f" {topping.name}"
             count += 1
     pizza.no_of_toppings = count
+    if pizza.template.name != 'Special' and count > 3:
+        pizza.delete()
+        return HttpResponseForbidden("Can only add a maximum of 3 toppings")
+    if pizza.template.name == 'Special' and count > 5:
+        pizza.delete()
+        return HttpResponseForbidden("Special Pizza can have a maximum of 5 toppings")
     pizza.string = string
     if size == "Small":
         order.price += pizza.price()
@@ -223,10 +239,15 @@ def sub(request , dish_id , order_id ):
         }
         return render( request , "orders/sub.html" , context)
     size = request.POST["size"]
+    if size == "NoEntry":
+        return HttpResponseForbidden("Please provide size")
     Xcheese = request.POST["Xcheese"]
     template = get_object_or_404(TemplateSub , pk = dish_id)
     sub = Sub.objects.create( orders=order,
                               template=template)
+    if sub.template.name == "Sausage , Peppers & Onions" and size == "Small":
+        sub.delete()
+        return HttpResponseForbidden("Small Size is not Available")
     if Xcheese == "Yes":
         sub.Xcheese = True
     if size == "Small":

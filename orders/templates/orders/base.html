@@ -11,6 +11,11 @@
         {% block stylesheet %}{% endblock %}
     </head>
     <body>
+      {% if message %}
+          <div>
+              {{ message }}
+          </div>
+      {% endif %}
         {% block body %}
         {% endblock %}
     </body>

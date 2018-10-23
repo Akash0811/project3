@@ -14,6 +14,17 @@
                       {{ item }}
                   </a>
               </li>
+              {% if item.pk == 1 %}
+                <li>
+                      1 Topping - Small: {{ item.Topping1SmallPrice }} - Large: {{ item.Topping1LargePrice }}
+                </li>
+                <li>
+                      2 Topping - Small: {{ item.Topping2SmallPrice }} - Large: {{ item.Topping2LargePrice }}
+                </li>
+                <li>
+                      3 Topping - Small: {{ item.Topping3SmallPrice }} - Large: {{ item.Topping3LargePrice }}
+                </li>
+              {% endif %}
           {% endfor %}
       </div>
       <div class="p-5 bd-highlight">
@@ -24,6 +35,17 @@
                       {{ item }}
                   </a>
               </li>
+              {% if item.pk == 1 %}
+                <li>
+                      1 Topping - Small: {{ item.Topping1SmallPrice }} - Large: {{ item.Topping1LargePrice }}
+                </li>
+                <li>
+                      2 Topping - Small: {{ item.Topping2SmallPrice }} - Large: {{ item.Topping2LargePrice }}
+                </li>
+                <li>
+                      3 Topping - Small: {{ item.Topping3SmallPrice }} - Large: {{ item.Topping3LargePrice }}
+                </li>
+              {% endif %}
           {% endfor %}
       </div>
       <div class="p-5 bd-highlight">

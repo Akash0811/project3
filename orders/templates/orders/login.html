@@ -7,11 +7,6 @@
          <div class="card-body">
           <h2 class="card-title"> Pinochhio's Pizza </h2>
           <h3 class="card-title"> Login </h3>
-          {% if message %}
-              <div>
-                  {{ message }}
-              </div>
-          {% endif %}
           <form action="{% url 'login' %}" method="post">
               {% csrf_token %}
               <input name="username" type="text"/>

@@ -57,9 +57,11 @@ class TemplateSicilianPizza(SizableDish):
     Topping3LargePrice = models.DecimalField( max_digits=7 , decimal_places=2 , default = Decimal(0.0) )
 
 class TemplateSub(SizableDish):
-    XCheesePrice = models.DecimalField( max_digits=7 , decimal_places=2 , default = Decimal(0.0) )
+    XCheesePrice = models.DecimalField( max_digits=7 , decimal_places=2 , default = Decimal(0.50) )
 
     def __str__(self):
+        if self.name == "Sausage , Peppers & Onions":
+            return f"{self.name} - Large:{self.LargePrice} - ExtraCheese:{self.XCheesePrice}"
         return f"{self.name} - Small:{self.SmallPrice} - Large:{self.LargePrice} - ExtraCheese:{self.XCheesePrice}"
 
 class TemplateDinnerPlatter(SizableDish):

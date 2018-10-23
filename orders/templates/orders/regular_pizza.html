@@ -6,6 +6,7 @@
     <form action="{% url 'regular_pizza' order_id=order_id dish_id=dish_id %}" method="post">
         {% csrf_token %}
         <h2> Size </h2>
+        <input type='hidden' name="size" value='NoEntry'>
         <input type="radio" name="size" value="Small"> Small<br>
         <input type="radio" name="size" value="Large"> Large<br>
         <h2> Toppings </h2>
