@@ -14,14 +14,21 @@
     <h3>Sicilian Pizza</h3>
       {% for item in sicilian_pizza %}
           <li>
-              Sicilian Pizza : {{ item }} 
+              Sicilian Pizza : {{ item }}
           </li>
       {% endfor %}
     <h3>Subs</h3>
       {% for item in sub %}
-          <li>
-              {{ item }}
-          </li>
+        {% if item.template.pk != 10 %}
+            <li>
+                {{ item }}
+            </li>
+        {% endif %}
+      {% endfor %}
+      {% for thing in Steak_Cheese %}
+        <li>
+          {{ thing }}
+        </li>
       {% endfor %}
     <h3>Pasta</h3>
       {% for item in pasta %}

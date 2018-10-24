@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Order , TemplateRegularPizza , TemplateSicilianPizza , TemplateSub , TemplateDinnerPlatter , TemplatePasta , TemplateSalad , Topping
+from .models import Order , TemplateRegularPizza , TemplateSicilianPizza , TemplateSub , TemplateDinnerPlatter , TemplatePasta , TemplateSalad , Topping , Add_on
 
 # Register your models here.
 
@@ -12,6 +12,7 @@ admin.site.register(TemplateDinnerPlatter)
 admin.site.register(TemplatePasta)
 admin.site.register(TemplateSalad)
 admin.site.register(Topping)
+admin.site.register(Add_on)
 
 '''Add order confirmation view in admin.py
 override django's changelist_view

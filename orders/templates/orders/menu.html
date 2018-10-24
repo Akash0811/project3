@@ -56,6 +56,21 @@
                       {{ item }}
                   </a>
               </li>
+            {% if forloop.last %}
+            <li>
+              Extra Cheese on any Sub - {{ item.XCheesePrice }}
+            </li>
+            {% endif %}
+            {% if forloop.counter == 10 %}
+              <ul>
+                {% for thing in Add_on %}
+                  <li>
+                    {{ forloop.index }}
+                    Add on above Sub - {{ thing }}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
           {% endfor %}
       </div>
       <div class="p-5 bd-highlight">

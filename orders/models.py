@@ -27,6 +27,12 @@ class Topping(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+class Add_on(models.Model):
+    name = models.CharField(max_length=64)
+    cost = models.DecimalField( max_digits=7 , decimal_places=2 , default = Decimal(0.50) )
+    def __str__(self):
+        return f"{self.name} - {self.cost}"
+
 class SizableDish(NonSizableDish):
     LargePrice = models.DecimalField( max_digits=7 , decimal_places=2 , default = Decimal(0.0) )
 
@@ -61,8 +67,8 @@ class TemplateSub(SizableDish):
 
     def __str__(self):
         if self.name == "Sausage , Peppers & Onions":
-            return f"{self.name} - Large:{self.LargePrice} - ExtraCheese:{self.XCheesePrice}"
-        return f"{self.name} - Small:{self.SmallPrice} - Large:{self.LargePrice} - ExtraCheese:{self.XCheesePrice}"
+            return f"{self.name} - Large:{self.LargePrice}"
+        return f"{self.name} - Small:{self.SmallPrice} - Large:{self.LargePrice}"
 
 class TemplateDinnerPlatter(SizableDish):
     pass
@@ -154,7 +160,14 @@ class Sub(models.Model):
     Xcheese = models.BooleanField(default = False)
 
     def __str__(self):
-        return f"{self.template.name} - Small Size:{self.size} - ExtraCheese:{self.Xcheese} - Price:{self.price()}"
+        if self.size == True:
+            if self.Xcheese == True:
+                return f"{self.template.name} - Size:Large - ExtraCheese:Yes - {self.price()}"
+            return f"{self.template.name} - Size:Large - ExtraCheese:No - {self.price()}"
+        else:
+            if self.Xcheese == True:
+                return f"{self.template.name} - Size:Small - ExtraCheese:Yes - {self.price()}"
+            return f"{self.template.name} - Size:Small - ExtraCheese:No - {self.price()}"
 
     def price(self):
         if self.size == False:
@@ -174,7 +187,9 @@ class DinnerPlatter(models.Model):
     orders = models.ForeignKey(Order , on_delete=models.CASCADE , related_name="din_dish")
 
     def __str__(self):
-        return f"{self.template.name} - Small Size:{self.size} - Price:{self.price()}"
+        if self.size == True:
+            return f"{self.template.name} - Size:Large - Price:{self.price()}"
+        return f"{self.template.name} - Size:Small - Price:{self.price()}"
 
     def price(self):
         if self.size == True:
@@ -200,3 +215,24 @@ class Salad(models.Model):
 
     def price(self):
         return self.template.SmallPrice
+
+class Steak_Cheese(Sub):
+    Add_ons = models.ManyToManyField(Add_on, blank=True, related_name="Steak_Cheese")
+    no_of_add_ons = models.IntegerField( default = 0 )
+    string = models.CharField( null = True , blank = True ,max_length=64 )
+
+    def __str__(self):
+        if self.size == True:
+            return f"{self.template.name} - Size:Large - {self.string} - {self.price()}"
+        return f"{self.template.name} - Size:Small - {self.string} - {self.price()}"
+
+    def price(self):
+        price = super().price()
+        price += self.add_on_price()
+        return price
+
+    def add_on_price(self):
+        price = Decimal(0.0)
+        for item in self.Add_ons.all():
+            price += item.cost
+        return price

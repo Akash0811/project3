@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 #from django.core.mail import send_mail
 from .forms import SignUpForm
 
-from .models import Order , RegularPizza , SicilianPizza , Sub , DinnerPlatter , Pasta , Salad , Topping ,\
+from .models import Order , RegularPizza , SicilianPizza , Sub , DinnerPlatter , Pasta , Salad , Topping , Add_on , Steak_Cheese ,\
                     TemplateRegularPizza , TemplateSicilianPizza , TemplateSub , TemplateDinnerPlatter , TemplatePasta , TemplateSalad
 
 # adds item to cart
@@ -23,6 +23,7 @@ def index(request , order_id):
         "regular_pizza": order.regular_dish.all(),
         "sicilian_pizza": order.sicilian_dish.all(),
         "sub": order.subs0_dish.all(),
+        "Steak_Cheese": Steak_Cheese.objects.filter( orders=order ) ,
         "pasta": order.pasta_dish.all(),
         "salad": order.salad_dish.all(),
         "dinner_platter": order.din_dish.all(),
@@ -68,6 +69,7 @@ class MenuListView(TemplateView):
             "Pasta": TemplatePasta.objects.all(),
             "Salad": TemplateSalad.objects.all(),
             "DinnerPlatter": TemplateDinnerPlatter.objects.all(),
+            "Add_on": Add_on.objects.all(),
         }
         return context
 
@@ -236,6 +238,7 @@ def sub(request , dish_id , order_id ):
         context = {
             "order_id": order_id,
             "dish_id": dish_id,
+            "Add_on": Add_on.objects.all()
         }
         return render( request , "orders/sub.html" , context)
     size = request.POST["size"]
@@ -243,11 +246,28 @@ def sub(request , dish_id , order_id ):
         return HttpResponseForbidden("Please provide size")
     Xcheese = request.POST["Xcheese"]
     template = get_object_or_404(TemplateSub , pk = dish_id)
-    sub = Sub.objects.create( orders=order,
-                              template=template)
-    if sub.template.name == "Sausage , Peppers & Onions" and size == "Small":
-        sub.delete()
-        return HttpResponseForbidden("Small Size is not Available")
+
+    # Steak Cheese exception
+    if dish_id == 10:
+        sub = Steak_Cheese.objects.create( orders=order,
+                                           template=template)
+        count = 0
+        string = "Add-on(s): "
+        for item in Add_on.objects.all():
+            if request.POST[item.name] == 'Yes':
+                sub.Add_ons.add(item)
+                string += f" {item.name}"
+                count += 1
+        sub.no_of_add_ons = count
+        sub.string = string
+    else:
+        sub = Sub.objects.create( orders=order,
+                                  template=template)
+
+        # Sausage , Peppers & Onions exception
+        if sub.template.name == "Sausage , Peppers & Onions" and size == "Small":
+            sub.delete()
+            return HttpResponseForbidden("Small Size is not Available")
     if Xcheese == "Yes":
         sub.Xcheese = True
     if size == "Small":

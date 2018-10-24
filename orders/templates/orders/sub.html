@@ -10,6 +10,15 @@
         <input type="radio" name="size" value="Large"> Large<br>
         <input type='hidden' name="Xcheese" value='No'>
         <input type="checkbox" name="Xcheese" value="Yes">ExtraCheese<br>
+        <br>
+        {% if dish_id == 10 %}
+          <h6>Add on</h6>
+          {% for item in Add_on %}
+            <input type='hidden' name="{{ item.name }}" value='No'>
+            <input type="checkbox" name="{{ item.name }}" value='Yes'> {{ item.name }}<br>
+          {% endfor %}
+        {% endif %}
+        <br>
         <input type="submit" value="Add"/>
     </form>
     <li>Go Back<a href="{% url 'index' order_id %}">Index/Cart</a></li>
