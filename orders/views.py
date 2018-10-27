@@ -5,6 +5,7 @@ from django.shortcuts import render , get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
 #from django.core.mail import send_mail
 from .forms import SignUpForm
 
@@ -12,6 +13,7 @@ from .models import Order , RegularPizza , SicilianPizza , Sub , DinnerPlatter ,
                     TemplateRegularPizza , TemplateSicilianPizza , TemplateSub , TemplateDinnerPlatter , TemplatePasta , TemplateSalad
 
 # adds item to cart
+@login_required
 def index(request , order_id):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html", {"message": None})
@@ -32,24 +34,7 @@ def index(request , order_id):
     return render( request , "orders/index.html" , content  )
 
 # Create your views here.
-'''
-def menu(request , order_id):
-    if not request.user.is_authenticated:
-        return render(request, "orders/login.html", {"message": None})
-    order = get_object_or_404(Order , pk = order_id)
-    context = {
-        "user": request.user,
-        "order_id": order.id,
-        "RegularPizza": TemplateRegularPizza.objects.all(),
-        "SicilianPizza": TemplateSicilianPizza.objects.all(),
-        "Sub": TemplateSub.objects.all(),
-        "Pasta": TemplatePasta.objects.all(),
-        "Salad": TemplateSalad.objects.all(),
-        "DinnerPlatter": TemplateDinnerPlatter.objects.all(),
-    }
-    return render(request, "orders/menu.html", context)
-'''
-
+@method_decorator(login_required, name='dispatch')
 class MenuListView(TemplateView):
     template_name = 'orders/menu.html'
     def get(self , *args , **kwargs):
@@ -107,29 +92,6 @@ def login_view(request):
     else:
         return render(request, "orders/login.html", {"message": "Invalid credentials."})
 
-'''
-def register(request):
-    logout(request)
-    if request.method == 'GET':
-        return render(request, "orders/register.html")
-    username = request.POST["username"]
-    password = request.POST["password"]
-    email = request.POST["email"]
-    first_name = request.POST["first_name"]
-    last_name = request.POST["last_name"]
-    if not username or not password or not email or not first_name or not last_name:
-        return render(request, "orders/register.html", {"message": "Please fill Entire Form"})
-    elif request.POST["password"] != request.POST["confirm_password"]:
-        return render(request, "orders/register.html", {"message": "Passwords Mismatched"})
-    user = User.objects.create_user(username , email , password )
-    user.first_name = first_name
-    user.last_name = last_name
-    user.save()
-    if user is not None:
-        return render(request, "orders/login.html", {"message": None})
-    else:
-        return render(request, "orders/register.html", {"message": "Please fill Entire Form"})
-'''
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -319,16 +281,6 @@ def rest(request , type_id , dish_id , order_id ):
     order.save()
     return HttpResponseRedirect(reverse("menu", args=(order_id,)))
 
-'''
-def logout_view(request):
-    logout(request)
-    return render(request, "orders/login.html", {"message": "Logged out."})
-'''
-
-'''
-View orders wich have buy == True
-Done for use in admin.py
-'''
 @login_required
 def confirmed_orders( request ):
     if request.user.is_superuser:
