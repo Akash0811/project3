@@ -3,6 +3,8 @@
 {% block body %}
 <h1>Hello, {{ user.first_name }}</h1>
 <ul>
+  {% block extension %}
+  {% endblock %}
     <li>Currently logged in as: {{ user.username }}</li>
     <li>Order id: {{ order_id }}</li>
     <h3>Regular Pizza</h3>
@@ -50,7 +52,7 @@
       {% endfor %}
     <h3>Total: {{ total }}</h3>
     {% if total != 0.0 %}
-      <h2><a href="{% url 'view' order_id %}">Confirm Order</a></h2>
+      <a href="{% url 'view' order_id %}"><button type="button" onclick="alert('Order Placed')">Confirm Order</button></a>
       <h3><a href="{% url 'destroy_order' order_id %}"> Destroy order </a></h3>
     {% endif %}
     <h3>---------------------<h3>

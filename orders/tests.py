@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 # Create your tests here.
 from .forms import SignUpForm
 from .models import *
+from decimal import Decimal
 
 # register page
 class SignUpFormTest(TestCase):
@@ -36,8 +37,8 @@ class SignUpTests(TestCase):
 
     def test_form_inputs(self):
         '''
-        The view must contain five inputs: csrf, username, email,
-        password1, password2
+        The view must contain seven inputs: csrf, username, email,
+        password1, password2 , first_name , last_name
         '''
         self.assertContains(self.response, '<input', 7)
         self.assertContains(self.response, 'type="text"', 3)
@@ -108,6 +109,20 @@ class HomeTests(TestCase):
         response = self.client.get(url)
         self.assertContains(response, 'href="{0}"'.format('/create_order/')) and self.assertContains(response, 'href="{0}"'.format('/logout/'))
 
+    '''views.py has 7 contextual keys in
+    HomeListView's last context
+    '''
+    def test_item_lists(self):
+        url = reverse('home')
+        response = self.client.get(url)
+        items = response.context[-1]
+        #print([d.keys() for d in items])
+        contains = False
+        for item in [d.keys() for d in items]:
+            if len(item) == 7:
+                contains = True
+        self.assertTrue(contains)
+
 # index page
 class IndexTests(TestCase):
     def setUp(self):
@@ -152,3 +167,38 @@ class IndexTests(TestCase):
         url = reverse(index , args=(1,))
         response = self.client.get(reverse(index , args=(1,)))
         self.assertRedirects(response, '{login_url}?next={url}'.format(login_url=login_url, url=url))
+
+    def test_forbidden(self):
+        self.client.get('/create_order/')
+        self.client.get('/logout')
+        User.objects.create_user(
+            username= 'dave',
+            email= 'dave@doe.com',
+            password='456')
+        self.client.login( username='dave' , password='456')
+        response = self.client.get(reverse(index , args=(1,)))
+        self.assertEquals(response.status_code , 403)
+
+    def test_item_lists(self):
+        self.client.get('/create_order/')
+        url = reverse('index', args=(1,))
+        response = self.client.get(url)
+        items = response.context[-1]
+        #print([d.keys() for d in items])
+        contains = False
+        for item in [d.keys() for d in items]:
+            if len(item) == 9:
+                contains = True
+        self.assertTrue(contains)
+
+    def test_index_view_contains_menu_logout_links_page(self):
+        self.client.get('/create_order/')
+        response = self.client.get('/1/index/')
+        self.assertContains(response, 'href="{0}"'.format('/1/menu/')) and self.assertContains(self.response, 'href="{0}"'.format('/logout/'))
+
+    def test_order_total_destroy_links(self):
+        self.client.get('/create_order/')
+        TemplatePasta.objects.create( name='abc' , SmallPrice = Decimal(1.0))
+        res= self.client.post('/1/1/1/rest/')
+        response = self.client.get('/1/index/')
+        self.assertContains(response, 'href="{0}"'.format('/1/view/')) and self.assertContains(self.response, 'href="{0}"'.format('/destroy_order/'))

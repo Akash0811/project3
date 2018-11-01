@@ -86,7 +86,7 @@ def view(request , order_id):
     Provide host username and password in settings.py
     Also turn on less_secure_apps functionality on gmail
     '''
-    return render( request , "orders/login.html" , {"message": "Order Placed"}  )
+    return HttpResponseRedirect(reverse('home'))
 
 # Creates new objects
 @login_required
@@ -153,9 +153,9 @@ def regular_pizza(request , dish_id , order_id ):
     if pizza.template.name != 'Special' and count > 3:
         pizza.delete()
         return HttpResponseForbidden("Can only add a maximum of 3 toppings")
-    if pizza.template.name == 'Special' and count > 5:
+    if pizza.template.name == 'Special' and count != 5:
         pizza.delete()
-        return HttpResponseForbidden("Special Pizza can have a maximum of 5 toppings")
+        return HttpResponseForbidden("Special Pizza has 5 toppings")
     pizza.string = string
     if size == "Small":
         order.price += pizza.price()
@@ -195,9 +195,9 @@ def sicilian_pizza(request , dish_id , order_id ):
     if pizza.template.name != 'Special' and count > 3:
         pizza.delete()
         return HttpResponseForbidden("Can only add a maximum of 3 toppings")
-    if pizza.template.name == 'Special' and count > 5:
+    if pizza.template.name == 'Special' and count != 5:
         pizza.delete()
-        return HttpResponseForbidden("Special Pizza can have a maximum of 5 toppings")
+        return HttpResponseForbidden("Special Pizza has 5 toppings")
     pizza.string = string
     if size == "Small":
         order.price += pizza.price()
