@@ -1,11 +1,154 @@
 from django.test import TestCase
-
+from django.urls import resolve , reverse
+from .views import *
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 # Create your tests here.
 from .forms import SignUpForm
+from .models import *
 
+# register page
 class SignUpFormTest(TestCase):
     def test_form_has_fields(self):
         form = SignUpForm()
         expected = ['username', 'email', 'first_name', 'last_name' ,'password1', 'password2']
         actual = list(form.fields)
         self.assertSequenceEqual(expected, actual)
+
+class SignUpTests(TestCase):
+    def setUp(self):
+        url = reverse('register')
+        self.response = self.client.get(url)
+
+    def test_signup_status_code(self):
+        self.assertEquals(self.response.status_code, 200)
+
+    def test_signup_url_resolves_signup_view(self):
+        view = resolve('/register/')
+        self.assertEquals(view.func, signup)
+
+    def test_csrf(self):
+        self.assertContains(self.response, 'csrfmiddlewaretoken')
+
+    def test_contains_form(self):
+        form = self.response.context.get('form')
+        self.assertIsInstance(form, UserCreationForm)
+
+    def test_form_inputs(self):
+        '''
+        The view must contain five inputs: csrf, username, email,
+        password1, password2
+        '''
+        self.assertContains(self.response, '<input', 7)
+        self.assertContains(self.response, 'type="text"', 3)
+        self.assertContains(self.response, 'type="email"', 1)
+        self.assertContains(self.response, 'type="password"', 2)
+
+class SuccessfulSignUpTests(TestCase):
+    def setUp(self):
+        url = reverse('register')
+        data = {
+            'username': 'john',
+            'email': 'john@doe.com',
+            'password1': 'abcdef123456',
+            'password2': 'abcdef123456',
+            'first_name': 'first',
+            'last_name': 'last'
+        }
+        self.response = self.client.post(url, data)
+        self.home_url = reverse('login')
+
+    def test_redirection(self):
+        '''
+        A valid form submission should redirect the user to the home page
+        '''
+        self.assertRedirects(self.response, self.home_url)
+
+class InvalidSignUpTests(TestCase):
+    def setUp(self):
+        url = reverse('register')
+        self.response = self.client.post(url, {})  # submit an empty dictionary
+
+    def test_signup_status_code(self):
+        '''
+        An invalid form submission should return to the same page
+        '''
+        self.assertEquals(self.response.status_code, 200)
+
+    def test_form_errors(self):
+        form = self.response.context.get('form')
+        self.assertTrue(form.errors)
+
+    def test_dont_create_user(self):
+        self.assertFalse(User.objects.exists())
+
+# home page
+class HomeTests(TestCase):
+    def setUp(self):
+        url = reverse('home')
+        self.response = self.client.get(url)
+
+    def test_home_view_status_code(self):
+        self.assertEquals(self.response.status_code, 200)
+
+    def test_home_url_resolves_home_view(self):
+        view = resolve('/')
+        self.assertEquals(view.func.view_class, HomeListView)
+
+    def test_home_view_contains_login_register_links_page(self):
+        self.assertContains(self.response, 'href="{0}"'.format('/login/')) and self.assertContains(self.response, 'href="{0}"'.format('/register/'))
+
+    def test_home_view_contains_create_logout_links_page(self):
+        User.objects.create_user(
+            username= 'john',
+            email= 'john@doe.com',
+            password='123')
+        self.client.login( username='john' , password='123')
+        url = reverse('home')
+        response = self.client.get(url)
+        self.assertContains(response, 'href="{0}"'.format('/create_order/')) and self.assertContains(response, 'href="{0}"'.format('/logout/'))
+
+# index page
+class IndexTests(TestCase):
+    def setUp(self):
+        User.objects.create_user(
+            username= 'john',
+            email= 'john@doe.com',
+            password='123')
+        self.client.login( username='john' , password='123')
+
+    def test_order_index_resolve(self):
+        view = resolve('/1/index/')
+        self.assertEquals(view.func, index)
+
+    def test_order_index_created_order_status_code(self):
+        self.client.get('/create_order/')
+        url = reverse('index', args=(1,))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+
+    def test_order_index_destroyed_order_status_code(self):
+        self.client.get('/create_order/')
+        url1 = reverse('index', args=(1,))
+        self.client.get('/1/destroy_order/')
+        url2 = reverse('index', args=(2,))
+        response1 = self.client.get(url1)
+        response2 = self.client.get(url2)
+        self.assertEquals(response1.status_code, 404) and self.assertEquals(response2.status_code, 200)
+
+    def test_order_index_not_created_order_status_code(self):
+        url = reverse('index', args=(1,))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 404)
+
+    def test_order_index_not_found_status_code(self):
+        url = reverse('index', args=(99,))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 404)
+
+    def test_redirection(self):
+        login_url = reverse('login')
+        self.client.get('/logout/')
+        url = reverse(index , args=(1,))
+        response = self.client.get(reverse(index , args=(1,)))
+        self.assertRedirects(response, '{login_url}?next={url}'.format(login_url=login_url, url=url))

@@ -4,9 +4,11 @@ from django.contrib.auth import views as auth_views
 from orders import views
 
 urlpatterns = [
-    path("", views.login_view, name="login"),
+    path("", views.HomeListView.as_view(), name='home'),
+    path('login/', auth_views.LoginView.as_view(template_name='orders/login.html'), name='login'),
     path("<int:order_id>/index/", views.index, name="index"),
-    path("login/", views.login_view, name="login"),
+    path("create_order/", views.create_order , name="create_order"),
+    path("<int:order_id>/destroy_order/", views.destroy_order , name="destroy_order"),
     path("register/", views.signup, name="register"),
     path('logout/', auth_views.LogoutView.as_view(template_name='orders/login.html'), name='logout'),
     path("<int:order_id>/menu/", views.MenuListView.as_view(), name="menu"),

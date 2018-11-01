@@ -51,9 +51,10 @@
     <h3>Total: {{ total }}</h3>
     {% if total != 0.0 %}
       <h2><a href="{% url 'view' order_id %}">Confirm Order</a></h2>
+      <h3><a href="{% url 'destroy_order' order_id %}"> Destroy order </a></h3>
     {% endif %}
     <h3>---------------------<h3>
-    <li><a href="{% url 'menu' order_id %}">Menu</a></li>
-    <li><a href="{% url 'logout' %}">Logout</a></li>
+    <h3><a href="{% url 'menu' order_id %}">Menu</a></h3>
+    <h3><a href="{% url 'logout' %}">Logout</a></h3>
 </ul>
 {% endblock %}

@@ -1,0 +1,105 @@
+{% extends "orders/base.html" %}
+
+{% block body %}
+<ul>
+  <h2>
+    {% if request.user.is_authenticated %}
+      <h4><a href="{% url 'create_order' %}"> Create Order </a></h4>
+    {% else %}
+      <h5><a href="{% url 'login' %}"> Login </a></h5>
+      <h5><a href="{% url 'register' %}"> Register </a></h5>
+    {% endif %}
+  </h2>
+    <div class="d-flex align-content-around flex-wrap">
+      <div class="p-5 bd-highlight">
+        <h3>Regular Pizza</h3>
+          {% for item in RegularPizza %}
+              <li>
+                      {{ item }}
+              </li>
+              {% if item.pk == 1 %}
+                <li>
+                      1 Topping - Small: {{ item.Topping1SmallPrice }} - Large: {{ item.Topping1LargePrice }}
+                </li>
+                <li>
+                      2 Topping - Small: {{ item.Topping2SmallPrice }} - Large: {{ item.Topping2LargePrice }}
+                </li>
+                <li>
+                      3 Topping - Small: {{ item.Topping3SmallPrice }} - Large: {{ item.Topping3LargePrice }}
+                </li>
+              {% endif %}
+          {% endfor %}
+      </div>
+      <div class="p-5 bd-highlight">
+        <h3>Sicilian Pizza</h3>
+          {% for item in SicilianPizza %}
+              <li>
+                  {{ item }}
+              </li>
+              {% if item.pk == 1 %}
+                <li>
+                      1 Topping - Small: {{ item.Topping1SmallPrice }} - Large: {{ item.Topping1LargePrice }}
+                </li>
+                <li>
+                      2 Topping - Small: {{ item.Topping2SmallPrice }} - Large: {{ item.Topping2LargePrice }}
+                </li>
+                <li>
+                      3 Topping - Small: {{ item.Topping3SmallPrice }} - Large: {{ item.Topping3LargePrice }}
+                </li>
+              {% endif %}
+          {% endfor %}
+      </div>
+      <div class="p-5 bd-highlight">
+        <h3>Subs</h3>
+          {% for item in Sub %}
+              <li>
+                  {{ item }}
+              </li>
+            {% if forloop.last %}
+            <li>
+              Extra Cheese on any Sub - {{ item.XCheesePrice }}
+            </li>
+            {% endif %}
+            {% if forloop.counter == 10 %}
+              <ul>
+                {% for thing in Add_on %}
+                  <li>
+                    {{ forloop.index }}
+                    Add on above Sub - {{ thing }}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          {% endfor %}
+      </div>
+      <div class="p-5 bd-highlight">
+        <h3>Pasta</h3>
+          {% for item in Pasta %}
+              <li>
+                  {{ item }}
+              </li>
+          {% endfor %}
+      </div>
+      <div class="p-5 bd-highlight">
+        <h3>Salads</h3>
+          {% for item in Salad %}
+              <li>
+                  {{ item }}
+              </li>
+          {% endfor %}
+      </div>
+      <div class="p-5 bd-highlight">
+        <h3>Dinner Platter</h3>
+          {% for item in DinnerPlatter %}
+              <li>
+                {{ item }}
+              </li>
+          {% endfor %}
+      </div>
+    </div>
+    <h3>---------------------<h3>
+    {% if request.user.is_authenticated %}
+    <li><a href="{% url 'logout' %}">Logout</a></li>
+    {% endif %}
+</ul>
+{% endblock %}

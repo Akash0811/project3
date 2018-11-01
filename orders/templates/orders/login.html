@@ -9,13 +9,15 @@
           <h3 class="card-title"> Login </h3>
           <form action="{% url 'login' %}" method="post">
               {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.GET.next }}" />
               <input name="username" type="text"/>
               <input name="password" type="password"/>
               <input type="submit" value="Login"/>
           </form>
         </div>
         <div class="card-footer text-muted text-center">
-          New to Pinochhio? <a href="{% url 'register' %}">Register</a>
+          New to Pinochhio? <a href="{% url 'register' %}">Register</a><br>
+          <a href="/"> Home </a>
         </div>
       </div>
     </div>
