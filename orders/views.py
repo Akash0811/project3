@@ -80,6 +80,8 @@ def view(request , order_id):
     order = get_object_or_404(Order , pk = order_id)
     if order.user != request.user:
         return HttpResponseForbidden("Forbidden")
+    elif order.buy == True:
+        return HttpResponseForbidden("Order Already Placed")
     order.buy = True
     order.save()
     '''
