@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect , HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect , HttpResponseForbidden , HttpResponseNotFound
 from django.shortcuts import render , get_object_or_404 , redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -129,6 +129,7 @@ def signup(request):
 @login_required
 def regular_pizza(request , dish_id , order_id ):
     order = get_object_or_404(Order , pk = order_id)
+    template = get_object_or_404(TemplateRegularPizza , pk = dish_id)
     if order.user != request.user or order.buy:
         return HttpResponseForbidden("Forbidden")
     if request.method == 'GET':
@@ -141,7 +142,6 @@ def regular_pizza(request , dish_id , order_id ):
     size = request.POST["size"]
     if size == "NoEntry":
         return HttpResponseForbidden("Please provide size")
-    template = get_object_or_404(TemplateRegularPizza , pk = dish_id)
     pizza = RegularPizza.objects.create(orders = order,
                                         template = template)
     count = 0
@@ -171,6 +171,7 @@ def regular_pizza(request , dish_id , order_id ):
 @login_required
 def sicilian_pizza(request , dish_id , order_id ):
     order = get_object_or_404(Order , pk = order_id)
+    template = get_object_or_404(TemplateSicilianPizza , pk = dish_id)
     if order.user != request.user or order.buy:
         return HttpResponseForbidden("Forbidden")
     if request.method == 'GET':
@@ -183,7 +184,6 @@ def sicilian_pizza(request , dish_id , order_id ):
     size = request.POST["size"]
     if size == "NoEntry":
         return HttpResponseForbidden("Please provide size")
-    template = get_object_or_404(TemplateSicilianPizza , pk = dish_id)
     pizza = SicilianPizza.objects.create(orders = order,
                                          template = template)
     count = 0
@@ -213,6 +213,7 @@ def sicilian_pizza(request , dish_id , order_id ):
 @login_required
 def sub(request , dish_id , order_id ):
     order = get_object_or_404(Order , pk = order_id)
+    template = get_object_or_404(TemplateSub , pk = dish_id)
     if order.user != request.user or order.buy:
         return HttpResponseForbidden("Forbidden")
     if request.method == 'GET':
@@ -226,7 +227,6 @@ def sub(request , dish_id , order_id ):
     if size == "NoEntry":
         return HttpResponseForbidden("Please provide size")
     Xcheese = request.POST["Xcheese"]
-    template = get_object_or_404(TemplateSub , pk = dish_id)
 
     # Steak Cheese exception
     if dish_id == 10:
@@ -265,38 +265,61 @@ def rest(request , type_id , dish_id , order_id ):
     order = get_object_or_404(Order , pk = order_id)
     if order.user != request.user or order.buy:
         return HttpResponseForbidden("Forbidden")
-    if request.method == 'GET':
-        context = {
-            "order_id": order_id,
-            "dish_id": dish_id,
-            "type_id": type_id
-        }
-        return render( request , "orders/rest.html" , context)
     if type_id == 1:
         template = get_object_or_404(TemplatePasta , pk = dish_id)
+        if request.method == 'GET':
+            context = {
+                "order_id": order_id,
+                "dish_id": dish_id,
+                "type_id": type_id
+            }
+            return render( request , "orders/rest.html" , context)
         pasta = Pasta.objects.create( orders=order,
                                       template=template)
         order.price += pasta.price()
         pasta.save()
     elif type_id == 2:
         template = get_object_or_404(TemplateSalad , pk = dish_id)
+        if request.method == 'GET':
+            context = {
+                "order_id": order_id,
+                "dish_id": dish_id,
+                "type_id": type_id
+            }
+            return render( request , "orders/rest.html" , context)
         salad = Salad.objects.create( orders=order,
                                       template=template)
         order.price += salad.price()
         salad.save()
     elif type_id == 3:
         template = get_object_or_404(TemplateDinnerPlatter , pk = dish_id)
+        if request.method == 'GET':
+            context = {
+                "order_id": order_id,
+                "dish_id": dish_id,
+                "type_id": type_id
+            }
+            return render( request , "orders/rest.html" , context)
         dinner = DinnerPlatter.objects.create( orders=order,
                                                template=template)
         order.price += dinner.price()
         dinner.save()
-    else:
+    elif type_id == 4:
         template = get_object_or_404(TemplateDinnerPlatter , pk = dish_id)
+        if request.method == 'GET':
+            context = {
+                "order_id": order_id,
+                "dish_id": dish_id,
+                "type_id": type_id
+            }
+            return render( request , "orders/rest.html" , context)
         dinner = DinnerPlatter.objects.create( size=True,
                                                orders=order,
                                                template=template)
         order.price += dinner.price()
         dinner.save()
+    else:
+        return HttpResponseNotFound('Not Found')
     order.save()
     return HttpResponseRedirect(reverse("menu", args=(order_id,)))
 
